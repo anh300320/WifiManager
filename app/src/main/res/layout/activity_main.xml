@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/color_background"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+    <LinearLayout
+        android:id="@+id/activity_main_block1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="@dimen/margin_3dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.ekn.gruzer.gaugelibrary.ArcGauge
+                android:id="@+id/activity_main_gauge_rx"
+                android:layout_weight="5"
+                android:layout_width="match_parent"
+                android:layout_height="170dp"/>
+            <com.ekn.gruzer.gaugelibrary.ArcGauge
+                android:id="@+id/activity_main_gauge_tx"
+                android:layout_weight="5"
+                android:layout_width="match_parent"
+                android:layout_height="170dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/activity_main_block1_rx"
+                android:text="Tải xuống: "
+                android:textColor="@color/color_text"
+                android:textStyle="bold"
+                android:layout_weight="5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/activity_main_block1_tx"
+                android:text="Tải lên: "
+                android:textColor="@color/color_text"
+                android:textStyle="bold"
+                android:layout_weight="5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </LinearLayout>
+
+<RelativeLayout
+    android:id="@+id/activity_main_block2"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/activity_main_block1"
+    android:background="@drawable/custom_border"
+    android:layout_margin="@dimen/margin_3dp">
+    <ImageView
+        android:src="@drawable/ic_wifi_24dp"
+        android:layout_margin="3dp"
+        android:id="@+id/activity_main_block2_ic_wifi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/activity_main_block2_text1"
+        android:layout_toRightOf="@id/activity_main_block2_ic_wifi"
+        android:text="Thông tin mạng"
+        android:textColor="@color/color_text"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/activity_main_block2_text2"
+        android:layout_below="@id/activity_main_block2_text1"
+        android:text="Kết nối: "
+        android:textColor="@color/color_text"
+        android:layout_margin="@dimen/margin_5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/activity_main_block2_text3"
+        android:layout_below="@id/activity_main_block2_text2"
+        android:text="Địa chỉ IP của bạn: "
+        android:textColor="@color/color_text"
+        android:layout_margin="@dimen/margin_5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/activity_main_block2_text4"
+        android:layout_below="@id/activity_main_block2_text3"
+        android:text="Số thiết bị phát hiện: "
+        android:textColor="@color/color_text"
+        android:layout_margin="@dimen/margin_5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/activity_main_connectto"
+        android:text="WiFi"
+        android:textColor="@color/color_text"
+        android:textStyle="bold"
+        android:layout_below="@id/activity_main_block2_text1"
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/margin_5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/activity_main_yourip"
+        android:text="xxx.xxx.xxx.xxx"
+        android:textColor="@color/color_text"
+        android:textStyle="bold"
+        android:layout_below="@id/activity_main_block2_text2"
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/margin_5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/activity_main_numberdevices"
+        android:text="xx"
+        android:textColor="@color/color_text"
+        android:textStyle="bold"
+        android:layout_below="@id/activity_main_block2_text3"
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/margin_5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <ProgressBar
+        android:id="@+id/activity_main_progress"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/activity_main_numberdevices"
+        android:layout_margin="@dimen/margin_5dp"
+        android:progress="100"
+        android:progressTint="@color/color_widget1"/>
+
+</RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/activity_main_recyclerview_devices"
+        android:layout_below="@+id/activity_main_block2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_3dp"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/activity_main_btn_check"
+        android:text="Tìm kiếm thiết bị"
+        android:textColor="@color/color_text"
+        android:textAlignment="center"
+        app:cornerRadius="0dp"
+        android:layout_margin="@dimen/margin_10dp"
+        android:backgroundTint="@color/color_widget1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>
