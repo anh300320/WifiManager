@@ -3,21 +3,26 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/custom_border"
-    android:backgroundTint="#FFFFFF"
-    android:layout_margin="@dimen/margin_10dp">
+    android:backgroundTint="@color/color_background_2"
+    android:layout_marginHorizontal="@dimen/margin_10dp"
+    android:layout_marginVertical="@dimen/margin_5dp">
 
     <ImageView
         android:id="@+id/item_device_icon"
-        android:layout_margin="@dimen/margin_3dp"
-        android:src="@drawable/ic_devices_black_24dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:src="@drawable/electronics"
+        android:tint="@color/color_widget2"
+        android:layout_width="100dp"
+        android:layout_height="80dp"
+        android:layout_marginRight="@dimen/margin_10dp"
+        android:layout_marginLeft="@dimen/margin_5dp"/>
 
     <TextView
         android:id="@+id/item_device_name"
         android:layout_margin="@dimen/margin_3dp"
+        android:textSize="@dimen/size_text_item"
         android:textColor="@color/color_text"
         android:text="Device's name"
+        android:textStyle="bold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/item_device_icon"/>
@@ -26,29 +31,23 @@
         android:id="@+id/item_device_vendor"
         android:layout_margin="@dimen/margin_3dp"
         android:text="Vendor"
-        android:textColor="@color/color_text"
+        android:textSize="13dp"
+        android:textColor="@color/color_widget2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/item_device_name"
-        android:layout_toRightOf="@+id/item_device_icon"/>
-
-    <TextView
-        android:id="@+id/item_device_mac"
-        android:text="MAC"
-        android:textColor="@color/color_text"
-        android:layout_margin="@dimen/margin_3dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/item_device_vendor"
-        android:layout_toRightOf="@+id/item_device_icon"/>
+        android:layout_below="@id/item_device_address"
+        android:layout_toRightOf="@id/item_device_icon"
+        />
 
     <TextView
         android:id="@+id/item_device_address"
         android:text="IP address"
-        android:textColor="@color/color_text"
+        android:textSize="13dp"
+        android:textStyle="bold"
+        android:textColor="#00EC1F"
         android:layout_margin="@dimen/margin_3dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/item_device_mac"
+        android:layout_below="@+id/item_device_name"
         android:layout_toRightOf="@+id/item_device_icon"/>
 </RelativeLayout>

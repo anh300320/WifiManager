@@ -11,51 +11,96 @@
         android:id="@+id/activity_main_block1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="@dimen/margin_3dp">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <com.ekn.gruzer.gaugelibrary.ArcGauge
+        android:orientation="horizontal"
+        android:layout_margin="@dimen/margin_3dp"
+        android:layout_below="@id/activity_main_block2">
+        <FrameLayout android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:background="@color/color_background"
+            xmlns:android="http://schemas.android.com/apk/res/android">
+            <com.sccomponents.gauges.library.ScArcGauge
                 android:id="@+id/activity_main_gauge_rx"
-                android:layout_weight="5"
+                xmlns:sc="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
-                android:layout_height="170dp"/>
-            <com.ekn.gruzer.gaugelibrary.ArcGauge
-                android:id="@+id/activity_main_gauge_tx"
-                android:layout_weight="5"
-                android:layout_width="match_parent"
-                android:layout_height="170dp"/>
-        </LinearLayout>
-        <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="30dp"
+                sc:sccAngleStart="-180"
+                sc:sccAngleSweep="180"
+                sc:sccStrokeColors="#A4EAFF|#6FDEFF|#47D5FF|#15C9FF|#1C7FFF|#1A7DFF|#147AFF|#0E77FF|#006FFF|#2551FF|#1F4CFF|#1242FF"
+                sc:sccStrokeColorsMode="solid"
+                sc:sccStrokeWidth="30dp"/>
+
+            <ImageView
+                android:id="@+id/activity_main_indicator_rx"
+                android:layout_width="64dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="29dp"
+                android:layout_marginLeft="18dp"
+                android:src="@drawable/indicator"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0000"
+                android:layout_marginBottom="2dp"
+                android:id="@+id/activity_main_text_rx"
+                android:layout_gravity="bottom|center_horizontal"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/size_text_gauge"/>
+        </FrameLayout>
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/activity_main_block1_rx"
-                android:text="Tải xuống: "
-                android:textColor="@color/color_text"
-                android:textStyle="bold"
-                android:layout_weight="5"
+            android:layout_height="wrap_content"
+            android:background="@color/color_background"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_weight="5">
+
+            <com.sccomponents.gauges.library.ScArcGauge
+                android:id="@+id/activity_main_gauge_tx"
+                xmlns:sc="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="30dp"
+                sc:sccAngleStart="-180"
+                sc:sccAngleSweep="180"
+                sc:sccStrokeColors="#A4EAFF|#6FDEFF|#47D5FF|#15C9FF|#1C7FFF|#1A7DFF|#147AFF|#0E77FF|#006FFF|#2551FF|#1F4CFF|#1242FF"
+                sc:sccStrokeColorsMode="solid"
+                sc:sccStrokeWidth="30dp"/>
+
+            <ImageView
+                android:id="@+id/activity_main_indicator_tx"
+                android:layout_width="64dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="29dp"
+                android:layout_marginLeft="18dp"
+                android:src="@drawable/indicator"/>
+
             <TextView
-                android:id="@+id/activity_main_block1_tx"
-                android:text="Tải lên: "
-                android:textColor="@color/color_text"
-                android:textStyle="bold"
-                android:layout_weight="5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0000"
+                android:layout_marginBottom="2dp"
+                android:id="@+id/activity_main_text_tx"
+                android:layout_gravity="bottom|center_horizontal"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/size_text_gauge"/>
+
+        </FrameLayout>
     </LinearLayout>
 
 <RelativeLayout
     android:id="@+id/activity_main_block2"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_below="@id/activity_main_block1"
-    android:background="@drawable/custom_border"
-    android:layout_margin="@dimen/margin_3dp">
+    android:background="@drawable/custom_border_2"
+    android:backgroundTint="@color/color_background_2"
+    android:layout_marginVertical="@dimen/margin_3dp"
+    android:layout_marginHorizontal="0dp">
     <ImageView
         android:src="@drawable/ic_wifi_24dp"
         android:layout_margin="3dp"
@@ -142,17 +187,19 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/activity_main_recyclerview_devices"
-        android:layout_below="@+id/activity_main_block2"
+        android:layout_below="@+id/activity_main_block1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_3dp"/>
+        android:layout_marginHorizontal="@dimen/margin_3dp"
+        android:layout_marginTop="@dimen/margin_3dp"
+        android:layout_marginBottom="50dp"/>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/activity_main_btn_check"
         android:text="Tìm kiếm thiết bị"
         android:textColor="@color/color_text"
         android:textAlignment="center"
-        app:cornerRadius="0dp"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlayExtended"
         android:layout_margin="@dimen/margin_10dp"
         android:backgroundTint="@color/color_widget1"
         android:layout_width="match_parent"

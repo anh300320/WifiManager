@@ -56,21 +56,20 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.tvDeviceName.setText("Tên thiết bị: " + devices.get(position).getDeviceName());
+        holder.tvDeviceName.setText("" + devices.get(position).getDeviceName());
         holder.tvVendor.setText(""+devices.get(position).getVendor());
-        holder.tvAddress.setText("Địa chỉ IP: " + devices.get(position).getAddress());
-        holder.tvMAC.setText("Địa chỉ MAC: " + devices.get(position).getMac());
-        switch (devices.get(position).getType()){
-            case "laptop":
-                holder.imgType.setImageResource(R.drawable.ic_laptop_85dp);
-                break;
-            case "smartphone":
-                holder.imgType.setImageResource(R.drawable.ic_smartphone_85dp);
-                break;
-            case "pc":
-                holder.imgType.setImageResource(R.drawable.ic_laptop_85dp);
-                break;
-        }
+        holder.tvAddress.setText("" + devices.get(position).getAddress());
+//        switch (devices.get(position).getType()){
+//            case "laptop":
+//                holder.imgType.setImageResource(R.drawable.ic_laptop_85dp);
+//                break;
+//            case "smartphone":
+//                holder.imgType.setImageResource(R.drawable.ic_smartphone_85dp);
+//                break;
+//            case "pc":
+//                holder.imgType.setImageResource(R.drawable.ic_laptop_85dp);
+//                break;
+//        }
     }
 
     @Override
@@ -82,7 +81,6 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
 
         TextView tvDeviceName;
         TextView tvAddress;
-        TextView tvMAC;
         TextView tvVendor;
         ImageView imgType;
 
@@ -90,7 +88,6 @@ public class ListDevicesAdapter extends RecyclerView.Adapter<ListDevicesAdapter.
             super(itemView);
             tvDeviceName = itemView.findViewById(R.id.item_device_name);
             tvAddress = itemView.findViewById(R.id.item_device_address);
-            tvMAC = itemView.findViewById(R.id.item_device_mac);
             tvVendor = itemView.findViewById(R.id.item_device_vendor);
             imgType = itemView.findViewById(R.id.item_device_icon);
         }

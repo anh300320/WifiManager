@@ -9,10 +9,11 @@ public class Device {
     private String lladdress;
     private String mac;
     private String state;
-    private String deviceName;
-    private String vendor = "Không xác định";
+    private String deviceName = "Thiết bị";
+    private String vendor = "";
     private String type = "laptop";
     private boolean isRouter = false;
+    private boolean isRouter2 = false;
 
     public Device(String str){
         String[] s1 = str.split("\\s");
@@ -102,5 +103,13 @@ public class Device {
         String vendor = this.vendor.toLowerCase();
         if(vendor.contains("samsung") || vendor.contains("huawei") || vendor.contains("xiaomi")) type = "smartphone";
         if(vendor.contains("hon hai") || vendor.contains("intel")) type = "pc";
+    }
+
+    public boolean isRouter2() {
+        return isRouter2;
+    }
+
+    public void setRouter2(boolean router2) {
+        isRouter2 = router2;
     }
 }

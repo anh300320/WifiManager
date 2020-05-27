@@ -1,9 +1,5 @@
 package com.example.wifimanager;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.InetAddresses;
 import android.net.TrafficStats;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,7 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -19,25 +15,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ekn.gruzer.gaugelibrary.ArcGauge;
-import com.ekn.gruzer.gaugelibrary.Range;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.sccomponents.gauges.library.ScArcGauge;
+import com.sccomponents.gauges.library.ScGauge;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 import Adapters.ListDevicesAdapter;
 import Objects.Device;
+import Objects.ListDevices;
 import Objects.Vendor;
 import Retrofit.RetrofitBuilder;
 import Retrofit.RetrofitService;
@@ -45,30 +36,44 @@ import Utils.NetworkUtil;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-//import Utils.NetworkUtil;
 
-import static java.sql.Types.NULL;
+//import Utils.NetworkUtil;
 
 public class MainActivity extends AppCompatActivity {
 
-    List<Device> devices = new ArrayList<>();
+    ListDevices devices;
     Stack<Device> incomplete = new Stack<>();
 
     long received;
     long transmitted;
-    long rx, tx;
+    float rx, tx;
+    float maxRx = 3000;
+    float maxTx = 3000;
+    int max1 = 1000, max2 = 200000, max3 = 1000000;
     int progress = 0;
+    float valueRx;
+    float valueTx;
+    String sRx = "Bps";
+    String sTx = "Bps";
+
+    //làm mượt gauge
+    int intervalValue, intervalGauge;
+    long currentValueRx, currentValueTx;
+    long gaugeValueRx, gaugeValueTx;
 
     ExtendedFloatingActionButton btnCheck;
     TextView tvConStatus;
     TextView tvIP;
     TextView tvNumDevice;
     String addressPrefix = "";
-    ArcGauge gaugeRx;
-    ArcGauge gaugeTx;
+    ScArcGauge gaugeRx;
+    ScArcGauge gaugeTx;
     TextView tvRx;
     TextView tvTx;
+    ImageView indicatorRx;
+    ImageView indicatorTx;
     ProgressBar progressBar;
+    FindDevices findDevices;
 
     RecyclerView rvDevices;
     ListDevicesAdapter mAdapter;
@@ -85,20 +90,40 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById();
         setRecyclerView();
-        setGauge();
+        setGauge(maxRx, maxTx);
         setTextBlock2();
         getTrafficStatus();
         setAddressPrefix();
-        new findDevices().execute();
+        getRouter();
+        findDevices = new FindDevices();
+        findDevices.execute();
         btnCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new findDevices().execute();
+                new FindDevices().execute();
             }
         });
     }
 
-    public class findDevices extends AsyncTask<Void, Integer, Void>{
+    public class FindDevices extends AsyncTask<Void, Integer, Void>{
+
+        @Override
+        protected void onCancelled() {
+            progressBar.setVisibility(View.GONE);
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progressBar.setVisibility(View.VISIBLE);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            progressBar.setVisibility(View.GONE);
+            super.onPostExecute(aVoid);
+        }
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -115,37 +140,43 @@ public class MainActivity extends AppCompatActivity {
                 String line;
                 Device tmp;
                 while((line = br.readLine()) != null) {
+                    if(isCancelled()) return null;
                     Log.d("hehe", "" + line);
                     tmp = new Device(line);
+                    tmp.setRouter(tmp.getMac().equals(devices.getRouterMac()));
                     if(!tmp.getState().equals("FAILED") && !tmp.isRouter()){
                         if(!tmp.getState().equals("INCOMPLETE")) {
                             InetAddress inetAddress = InetAddress.getByName(tmp.getAddress());
                             String hostName = inetAddress.getHostName();
                             if(!hostName.equals(tmp.getAddress())) tmp.setDeviceName(hostName);
-                            else tmp.setDeviceName("Không xác định!");
+                            else tmp.setDeviceName("Thiết bị");
                             devices.add(tmp);
                         } else incomplete.push(tmp);
-                        progress+= devices.size();
+                        progress+= devices.size()*2;
                         publishProgress(progress);
                     } else {
-                        progress++;
+                        if(isCancelled()) return null;
+                        progress+=2;
                         publishProgress(progress);
                     }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            for(int i = 0; i < 5; i++){
-                getListDevice();
-                publishProgress(255 - incomplete.size());
-            }
-            publishProgress(255);
+//            for(int i = 0; i < 2; i++){
+//                if(isCancelled()) return null;
+//                getListDevice();
+//                progress++;
+//                publishProgress(progress);
+//            }
+            publishProgress(510);
             return null;
         }
 
         @Override
         protected void onProgressUpdate(Integer... values) {
             int progress = values[0];
+            progress = progress * 100 / 510;
             progressBar.setProgress(progress);
             updateListDevices();
             super.onProgressUpdate(values);
@@ -157,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < size; i++){
             try {
                 InetAddress inetAddress = InetAddress.getByName(incomplete.get(i).getAddress());
-                Log.d("hehe_incomplete", "" + incomplete.get(i).getAddress());
+                //Log.d("hehe_incomplete", "" + incomplete.get(i).getAddress());
                 if(inetAddress.isReachable(5000)) {
                     incomplete.get(i).setDeviceName(inetAddress.getHostName());
                     incomplete.remove(i);
@@ -173,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateListDevices(){
         getDevicesVendor();
-        mAdapter.set(devices);
+        mAdapter.set(devices.getAll());
         mAdapter.notifyDataSetChanged();
         tvNumDevice.setText(""+mAdapter.getItemCount());
     }
@@ -191,12 +222,15 @@ public class MainActivity extends AppCompatActivity {
                     Vendor deviceVendor = response.body();
                     if(deviceVendor != null) device.setVendor("" + deviceVendor.getCompany());
                     device.setType();
+                    mAdapter.set(devices.getAll());
+                    mAdapter.notifyDataSetChanged();
                 }
 
                 @Override
                 public void onFailure(Call<Vendor> call, Throwable t) {}
             });
         }
+
     }
 
     void pingAll(){
@@ -217,6 +251,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void setRecyclerView(){
+        rvDevices.setItemViewCacheSize(20);
+        rvDevices.setDrawingCacheEnabled(true);
+        rvDevices.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        rvDevices.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getBaseContext());
         rvDevices.setLayoutManager(layoutManager);
         mAdapter = new ListDevicesAdapter();
@@ -225,21 +263,40 @@ public class MainActivity extends AppCompatActivity {
 
     void getTrafficStatus(){
 
+        intervalValue = 1000;
+        intervalGauge = 10;
         //final boolean mStopHandler = false;
         received = TrafficStats.getTotalRxBytes();
         transmitted = TrafficStats.getTotalTxBytes();
+        gaugeValueRx = 0;
+        gaugeValueTx = 0;
         final Handler mHandler = new Handler(Looper.getMainLooper());
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                rx = TrafficStats.getTotalRxBytes() - received;
-                tx = TrafficStats.getTotalTxBytes() - transmitted;
-                updateGauge(rx, tx);
-                Log.d("hehe_status", "" + rx);
-                Log.d("hehe_status", "" + tx);
-                received = TrafficStats.getTotalRxBytes();
-                transmitted = TrafficStats.getTotalTxBytes();
-                mHandler.postDelayed(this, 500);
+                if(intervalValue != 0) {
+                    gaugeValueRx += (currentValueRx - gaugeValueRx) * intervalGauge / intervalValue;
+                    gaugeValueTx += (currentValueTx - gaugeValueTx) * intervalGauge / intervalValue;
+                }
+                if(intervalValue <= 0){
+                    intervalValue = 1000;
+                    Log.d("hehe_status", "Received: "+ currentValueRx);
+                    Log.d("hehe_status", "Transmitted: " + currentValueTx);
+                    currentValueRx = TrafficStats.getTotalRxBytes() - received;
+                    currentValueTx = TrafficStats.getTotalTxBytes() - transmitted;
+                    received = TrafficStats.getTotalRxBytes();
+                    transmitted = TrafficStats.getTotalTxBytes();
+                } else intervalValue -= intervalGauge;
+                updateGauge(gaugeValueRx, gaugeValueTx);
+                mHandler.postDelayed(this, intervalGauge);
+//                rx = TrafficStats.getTotalRxBytes() - received;
+//                tx = TrafficStats.getTotalTxBytes() - transmitted;
+//                updateGauge(rx*2, tx*2);
+//                Log.d("hehe_status", "" + rx);
+//                Log.d("hehe_status", "" + tx);
+//                received = TrafficStats.getTotalRxBytes();
+//                transmitted = TrafficStats.getTotalTxBytes();
+//                mHandler.postDelayed(this, 500);
             }
         };
         mHandler.post(runnable);
@@ -253,50 +310,71 @@ public class MainActivity extends AppCompatActivity {
         tvNumDevice = findViewById(R.id.activity_main_numberdevices);
         gaugeRx = findViewById(R.id.activity_main_gauge_rx);
         gaugeTx = findViewById(R.id.activity_main_gauge_tx);
-        tvRx = findViewById(R.id.activity_main_block1_rx);
-        tvTx = findViewById(R.id.activity_main_block1_tx);
+        tvRx = findViewById(R.id.activity_main_text_rx);
+        tvTx = findViewById(R.id.activity_main_text_tx);
         progressBar = findViewById(R.id.activity_main_progress);
+        indicatorRx = findViewById(R.id.activity_main_indicator_rx);
+        indicatorTx = findViewById(R.id.activity_main_indicator_tx);
+        progressBar.setVisibility(View.GONE);
     }
 
-    void setGauge(){
-        Range range1 = new Range();
-        range1.setColor(Color.parseColor("#2828F7"));
-        range1.setFrom(0.0);
-        range1.setTo(100);
+    void setGauge(float maxRx, float maxTx){
+        indicatorRx.setPivotX(30f);
+        indicatorRx.setPivotY(30f);
+        indicatorTx.setPivotX(30f);
+        indicatorTx.setPivotY(30f);
 
-        Range range2 = new Range();
-        range2.setColor(Color.parseColor("#2828F7"));
-        range2.setFrom(100);
-        range2.setTo(300);
+        gaugeRx.setOnEventListener(new ScGauge.OnEventListener() {
+            @Override
+            public void onValueChange(ScGauge gauge, float lowValue, float highValue, boolean isRunning) {
+                float angle = -180 + highValue * 180 / 100;
+                indicatorRx.setRotation(angle);
 
-        Range range3 = new Range();
-        range3.setColor(Color.parseColor("#2828F7"));
-        range3.setFrom(300);
-        range3.setTo(500);
+                valueRx =(float) Math.round(valueRx * 100) / 100;
+                tvRx.setText("Tải xuống: " +  valueRx + " " + sRx);
+            }
+        });
 
-        gaugeRx.addRange(range1); gaugeTx.addRange(range1);
-        gaugeRx.addRange(range2); gaugeTx.addRange(range2);
-        gaugeRx.addRange(range3); gaugeTx.addRange(range3);
+        gaugeTx.setOnEventListener(new ScGauge.OnEventListener() {
+            @Override
+            public void onValueChange(ScGauge gauge, float lowValue, float highValue, boolean isRunning) {
+                float angle = -180 + highValue * 180 / 100;
+                indicatorTx.setRotation(angle);
 
-        gaugeRx.setMinValue(0); gaugeTx.setMinValue(0);
-        gaugeRx.setMaxValue(500); gaugeTx.setMaxValue(500);
+                valueTx =(float) Math.round(valueTx * 100) / 100;
+                tvTx.setText("Tải lên: " + valueTx + " " + sTx);
+            }
+        });
     }
 
-    void updateGauge(double rx, double tx){
-        rx = rx/1000;
-        tx = tx/1000;
-        rx = (double) Math.round(rx*10)/10;
-        tx = (double) Math.round(tx*10)/10;
-        rx= rx*2;
-        tx=tx*2;
-        gaugeRx.setValue(rx);
-        gaugeTx.setValue(tx);
-        tvRx.setText("Tải xuống: " + rx + "KBps");
-        tvTx.setText("Tải lên: " + tx + "KBps");
+    void updateGauge(float rx, float tx){
+
+        float pRx = 0, pTx = 0;
+
+        valueRx = rx;
+        valueTx = tx;
+        if(valueRx < 1000) sRx = "Bps";
+        if(valueTx < 1000) sTx = "Bps";
+        if(valueRx > 1000) {valueRx/=1000; sRx = "KBps";}
+        if(valueRx > 1000) {valueRx/=1000; sRx = "MBps";}
+        if(valueTx > 1000) {valueTx/=1000; sTx = "KBps";}
+        if(valueTx > 1000) {valueTx/=1000; sTx = "MBps";}
+
+        if(rx <= max1) pRx = rx/max1 * (200/7);
+        if(max1 < rx && rx <= max2) pRx = 200/7 + (rx - max1) / (max2 - max1) * 400/7;
+        if(max2 < rx) pRx = 3 + 600/7 + (rx-max2) / (max3 - max2) * 100/7;
+
+        if(tx <= max1) pTx = tx/max1 * (200/7);
+        if(max1 < tx && tx <= max2) pTx = 200/7 + (tx - max1) / (max2 - max1) * 400/7;
+        if(max2 < tx) pTx =3 + 600/7 + (tx-max2) / (max3 - max2) * 100/7;
+
+        gaugeRx.setHighValue(pRx);
+        gaugeTx.setHighValue(pTx);
     }
 
     void setAddressPrefix(){
         addressPrefix = NetworkUtil.getIPAddress(getBaseContext());
+        if(addressPrefix == null) return;
         int length = addressPrefix.length();
         length--;
         while((length >= 0) && addressPrefix.charAt(length)!= '.'){
@@ -304,5 +382,22 @@ public class MainActivity extends AppCompatActivity {
             length--;
         }
         Log.d("hehehe", ""+ addressPrefix);
+    }
+
+    void getRouter(){
+        Process process = null;
+        try {
+            process = Runtime.getRuntime().exec("ip neigh");
+            BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            String line;
+            Device tmp;
+            while((line = br.readLine()) != null){
+                tmp = new Device(line);
+                if(tmp.isRouter()) devices.setRouterMac(tmp.getMac());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
