@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_background"
+    tools:context=".SaveDeviceActivity">
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/electronics"
+        android:id="@+id/activity_device_img"
+        android:tint="@color/color_widget2"/>
+
+    <TextView
+        android:id="@+id/activity_device_text_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tên thiết bị: "
+        android:textStyle="bold"
+        android:textSize="@dimen/size_text_item"
+        android:textColor="@color/color_text"
+        android:layout_margin="@dimen/margin_5dp"
+        android:layout_below="@id/activity_device_img"/>
+
+    <TextView
+        android:id="@+id/activity_device_text_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Địa chỉ IP: "
+        android:textColor="@color/color_text"
+        android:textStyle="bold"
+        android:textSize="@dimen/size_text_item"
+        android:layout_below="@+id/activity_device_text_1"
+        android:layout_margin="@dimen/margin_5dp"/>
+
+    <TextView
+        android:id="@+id/activity_device_text_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Địa chỉ MAC: "
+        android:textColor="@color/color_text"
+        android:textStyle="bold"
+        android:textSize="@dimen/size_text_item"
+        android:layout_below="@+id/activity_device_text_2"
+        android:layout_margin="@dimen/margin_5dp"/>
+
+    <TextView
+        android:id="@+id/activity_device_text_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nhà cung cấp: "
+        android:textColor="@color/color_text"
+        android:textStyle="bold"
+        android:textSize="@dimen/size_text_item"
+        android:layout_below="@+id/activity_device_text_3"
+        android:layout_margin="@dimen/margin_5dp"/>
+
+    <TextView
+        android:id="@+id/activity_device_text_5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tên được lưu: "
+        android:textColor="@color/color_text"
+        android:textStyle="bold"
+        android:textSize="@dimen/size_text_item"
+        android:layout_below="@+id/activity_device_text_4"
+        android:layout_margin="@dimen/margin_5dp"/>
+
+    <Button
+        android:id="@+id/activity_device_button_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lưu thiết bị này"
+        android:layout_below="@id/activity_device_text_5"
+        android:layout_margin="@dimen/margin_10dp"
+        android:backgroundTint="@color/color_widget1"/>
+
+    <TextView
+        android:id="@+id/activity_device_text_devicename"
+        android:textColor="@color/color_text"
+        android:textStyle="bold"
+        android:textSize="@dimen/size_text_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/activity_device_img"
+        android:layout_margin="@dimen/margin_5dp"/>
+
+    <TextView
+        android:id="@+id/activity_device_text_ip"
+        android:textColor="@color/color_text"
+        android:textStyle="bold"
+        android:textSize="@dimen/size_text_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/activity_device_text_devicename"
+        android:layout_margin="@dimen/margin_5dp"/>
+
+    <TextView
+        android:id="@+id/activity_device_text_mac"
+        android:textColor="@color/color_text"
+        android:textStyle="bold"
+        android:textSize="@dimen/size_text_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/activity_device_text_ip"
+        android:layout_margin="@dimen/margin_5dp"/>
+    <TextView
+        android:id="@+id/activity_device_text_vendor"
+        android:textColor="@color/color_text"
+        android:textStyle="bold"
+        android:textSize="@dimen/size_text_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/activity_device_text_mac"
+        android:layout_margin="@dimen/margin_5dp"/>
+
+    <TextView
+        android:id="@+id/activity_device_text_savedname"
+        android:textColor="@color/color_text"
+        android:textStyle="bold"
+        android:textSize="@dimen/size_text_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/activity_device_text_vendor"
+        android:layout_margin="@dimen/margin_5dp"/>
+
+</RelativeLayout>

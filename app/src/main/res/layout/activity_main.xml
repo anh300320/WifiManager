@@ -39,7 +39,17 @@
                 android:layout_gravity="bottom|center_horizontal"
                 android:layout_marginBottom="29dp"
                 android:layout_marginLeft="18dp"
-                android:src="@drawable/indicator"/>
+                android:src="@drawable/indicator4"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tải xuống: "
+                android:layout_marginBottom="2dp"
+                android:layout_marginLeft="@dimen/margin_20dp"
+                android:layout_gravity="left|bottom"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/size_text_gauge"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -47,7 +57,8 @@
                 android:text="0000"
                 android:layout_marginBottom="2dp"
                 android:id="@+id/activity_main_text_rx"
-                android:layout_gravity="bottom|center_horizontal"
+                android:layout_gravity="right|bottom"
+                android:layout_marginRight="15dp"
                 android:textColor="#ffffff"
                 android:textSize="@dimen/size_text_gauge"/>
         </FrameLayout>
@@ -67,7 +78,7 @@
                 android:padding="30dp"
                 sc:sccAngleStart="-180"
                 sc:sccAngleSweep="180"
-                sc:sccStrokeColors="#A4EAFF|#6FDEFF|#47D5FF|#15C9FF|#1C7FFF|#1A7DFF|#147AFF|#0E77FF|#006FFF|#2551FF|#1F4CFF|#1242FF"
+                sc:sccStrokeColors="#A4EAFF|#6FDEFF|#47D5FF|#15C9FF|#1C7FFF|#1A7DFF|#147AFF|#0E77FF|#006FFF|#214DFF|#1847FF|#1242FF"
                 sc:sccStrokeColorsMode="solid"
                 sc:sccStrokeWidth="30dp"/>
 
@@ -78,7 +89,17 @@
                 android:layout_gravity="bottom|center_horizontal"
                 android:layout_marginBottom="29dp"
                 android:layout_marginLeft="18dp"
-                android:src="@drawable/indicator"/>
+                android:src="@drawable/indicator4"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tải lên: "
+                android:layout_marginBottom="2dp"
+                android:layout_gravity="left|bottom"
+                android:layout_marginLeft="@dimen/margin_20dp"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/size_text_gauge"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -86,7 +107,8 @@
                 android:text="0000"
                 android:layout_marginBottom="2dp"
                 android:id="@+id/activity_main_text_tx"
-                android:layout_gravity="bottom|center_horizontal"
+                android:layout_gravity="bottom|right"
+                android:layout_marginRight="@dimen/margin_20dp"
                 android:textColor="#ffffff"
                 android:textSize="@dimen/size_text_gauge"/>
 
@@ -193,6 +215,19 @@
         android:layout_marginHorizontal="@dimen/margin_3dp"
         android:layout_marginTop="@dimen/margin_3dp"
         android:layout_marginBottom="50dp"/>
+
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/activity_main_adview"
+        android:layout_below="@+id/activity_main_block1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/activity_main_btn_check"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
+    </com.google.android.gms.ads.AdView>
+
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/activity_main_btn_check"

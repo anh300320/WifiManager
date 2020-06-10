@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_item_measure_signal"
+        android:icon="@drawable/ic_wifi_24dp"
+        android:title="Đo cường độ sóng"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/menu_item_manage_router"
+        android:title="Quản trị Router"
+        app:showAsAction="never"/>
+</menu>

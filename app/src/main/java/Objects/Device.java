@@ -2,7 +2,9 @@ package Objects;
 
 import android.util.Log;
 
-public class Device {
+import java.io.Serializable;
+
+public class Device implements Serializable {
 
     private String address;
     private String name;
@@ -12,8 +14,20 @@ public class Device {
     private String deviceName = "Thiết bị";
     private String vendor = "";
     private String type = "laptop";
+    private String savedName;
     private boolean isRouter = false;
     private boolean isRouter2 = false;
+
+    public void set(Device device){
+        this.address = device.address;
+        this.name = device.name;
+        this.lladdress = device.lladdress;
+        this.mac = device.mac;
+        this.state = device.state;
+        this.deviceName = device.deviceName;
+        this.vendor = device.vendor;
+        this.isRouter = device.isRouter;
+    }
 
     public Device(String str){
         String[] s1 = str.split("\\s");
@@ -111,5 +125,13 @@ public class Device {
 
     public void setRouter2(boolean router2) {
         isRouter2 = router2;
+    }
+
+    public String getSavedName() {
+        return savedName;
+    }
+
+    public void setSavedName(String savedName) {
+        this.savedName = savedName;
     }
 }

@@ -5,9 +5,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
+
+import androidx.annotation.RequiresApi;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -141,4 +144,75 @@ public class NetworkUtil {
                 ((ipAdress >> 16) & 0xFF) + "." +
                 (ipAdress >> 24 & 0xFF);
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    public static int getReceiveSpeed(Context context){
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo == null) {
+            return 0;
+        }
+
+        if (networkInfo.isConnected()) {
+            final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            final WifiInfo connectionInfo = wifiManager.getConnectionInfo();
+            if (connectionInfo != null) {
+                return connectionInfo.getRxLinkSpeedMbps();
+            }
+        }
+        return 0;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    public static int getTransmitSpeed(Context context){
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo == null) {
+            return 0;
+        }
+
+        if (networkInfo.isConnected()) {
+            final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            final WifiInfo connectionInfo = wifiManager.getConnectionInfo();
+            if (connectionInfo != null) {
+                return connectionInfo.getTxLinkSpeedMbps();
+            }
+        }
+        return 0;
+    }
+
+    public static int getLinkSpeed(Context context){
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo == null) {
+            return 0;
+        }
+
+        if (networkInfo.isConnected()) {
+            final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            final WifiInfo connectionInfo = wifiManager.getConnectionInfo();
+            if (connectionInfo != null) {
+                return connectionInfo.getLinkSpeed();
+            }
+        }
+        return 0;
+    }
+
+    public static int getFrequency(Context context){
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo == null) {
+            return 0;
+        }
+
+        if (networkInfo.isConnected()) {
+            final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            final WifiInfo connectionInfo = wifiManager.getConnectionInfo();
+            if (connectionInfo != null) {
+                return connectionInfo.getFrequency() / 1000;
+            }
+        }
+        return 0;
+    }
+
 }

@@ -1,20 +1,34 @@
 package com.example.wifimanager;
 
+import android.app.Activity;
+import android.app.admin.DeviceAdminService;
+import android.content.Intent;
 import android.net.TrafficStats;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.sccomponents.gauges.library.ScArcGauge;
 import com.sccomponents.gauges.library.ScGauge;
@@ -29,6 +43,7 @@ import java.util.Stack;
 import Adapters.ListDevicesAdapter;
 import Objects.Device;
 import Objects.ListDevices;
+import Objects.OnItemClickListener;
 import Objects.Vendor;
 import Retrofit.RetrofitBuilder;
 import Retrofit.RetrofitService;
@@ -41,12 +56,12 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    ListDevices devices;
+    private static final int REQUEST_CODE_EXAMPLE = 0x9345;
+
     Stack<Device> incomplete = new Stack<>();
 
     long received;
     long transmitted;
-    float rx, tx;
     float maxRx = 3000;
     float maxTx = 3000;
     int max1 = 1000, max2 = 200000, max3 = 1000000;
@@ -74,12 +89,15 @@ public class MainActivity extends AppCompatActivity {
     ImageView indicatorTx;
     ProgressBar progressBar;
     FindDevices findDevices;
+    ViewGroup vgBlock2;
 
     RecyclerView rvDevices;
-    ListDevicesAdapter mAdapter;
+    ListDevicesAdapter devices;
     RecyclerView.LayoutManager layoutManager;
 
     RetrofitService retrofitService;
+
+    private AdView mAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +105,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         retrofitService = RetrofitBuilder.build("https://api.maclookup.app/");
+
+        if(SaveFileManager.isNull()) SaveFileManager.getSavedDevice(getBaseContext());
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+                Log.d("hehe_ad", "onInitializationComplete: ");
+            }
+        });
+
+        mAd = findViewById(R.id.activity_main_adview);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAd.loadAd(adRequest);
 
         findViewById();
         setRecyclerView();
@@ -103,9 +134,17 @@ public class MainActivity extends AppCompatActivity {
                 new FindDevices().execute();
             }
         });
+        vgBlock2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), SignalActivity.class);
+                intent.putExtra("prefix", addressPrefix);
+                startActivity(intent);
+            }
+        });
     }
 
-    public class FindDevices extends AsyncTask<Void, Integer, Void>{
+    public class FindDevices extends AsyncTask<Void, Device, Void>{
 
         @Override
         protected void onCancelled() {
@@ -146,18 +185,17 @@ public class MainActivity extends AppCompatActivity {
                     tmp.setRouter(tmp.getMac().equals(devices.getRouterMac()));
                     if(!tmp.getState().equals("FAILED") && !tmp.isRouter()){
                         if(!tmp.getState().equals("INCOMPLETE")) {
+                            SaveFileManager.getSavedName(tmp);
                             InetAddress inetAddress = InetAddress.getByName(tmp.getAddress());
                             String hostName = inetAddress.getHostName();
                             if(!hostName.equals(tmp.getAddress())) tmp.setDeviceName(hostName);
                             else tmp.setDeviceName("Thiết bị");
-                            devices.add(tmp);
+                            publishProgress(tmp);
                         } else incomplete.push(tmp);
                         progress+= devices.size()*2;
-                        publishProgress(progress);
                     } else {
                         if(isCancelled()) return null;
                         progress+=2;
-                        publishProgress(progress);
                     }
                 }
             } catch (IOException e) {
@@ -169,17 +207,21 @@ public class MainActivity extends AppCompatActivity {
 //                progress++;
 //                publishProgress(progress);
 //            }
-            publishProgress(510);
+            publishProgress();
             return null;
         }
 
         @Override
-        protected void onProgressUpdate(Integer... values) {
-            int progress = values[0];
-            progress = progress * 100 / 510;
-            progressBar.setProgress(progress);
-            updateListDevices();
-            super.onProgressUpdate(values);
+        protected void onProgressUpdate(Device... devicess) {
+            if(devicess.length != 0){
+                devices.add(devicess[0]);
+                devices.notifyItemInserted(devices.size() - 1);
+                getDevicesVendor(devices.size() - 1);
+            } else {
+                devices.notifyDataSetChanged();
+            }
+            tvNumDevice.setText(""+devices.getItemCount());
+            super.onProgressUpdate(devicess);
         }
     }
 
@@ -202,19 +244,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void updateListDevices(){
-        getDevicesVendor();
-        mAdapter.set(devices.getAll());
-        mAdapter.notifyDataSetChanged();
-        tvNumDevice.setText(""+mAdapter.getItemCount());
-    }
-
-    void getDevicesVendor(){
-        int size = devices.size();
-        for(int i = 0; i < size; i++){
-            final Device device = devices.get(i);
+    void getDevicesVendor(int position){
+            final Device device = devices.get(position);
             String macAddress = device.getMac();
-
+            int pos = position;
             Call<Vendor> getVendor = retrofitService.getVendor(macAddress);
             getVendor.enqueue(new Callback<Vendor>() {
                 @Override
@@ -222,14 +255,13 @@ public class MainActivity extends AppCompatActivity {
                     Vendor deviceVendor = response.body();
                     if(deviceVendor != null) device.setVendor("" + deviceVendor.getCompany());
                     device.setType();
-                    mAdapter.set(devices.getAll());
-                    mAdapter.notifyDataSetChanged();
+                    devices.update(pos, device);
+                    devices.notifyItemChanged(pos);
                 }
 
                 @Override
                 public void onFailure(Call<Vendor> call, Throwable t) {}
             });
-        }
 
     }
 
@@ -246,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
 
     void setTextBlock2(){
         tvConStatus.setText(""+NetworkUtil.getNetworkType(getBaseContext()));
-        tvNumDevice.setText(""+mAdapter.getItemCount());
+        tvNumDevice.setText(""+devices.getItemCount());
         tvIP.setText("" +NetworkUtil.getIPAddress(getBaseContext()));
     }
 
@@ -257,14 +289,23 @@ public class MainActivity extends AppCompatActivity {
         rvDevices.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getBaseContext());
         rvDevices.setLayoutManager(layoutManager);
-        mAdapter = new ListDevicesAdapter();
-        rvDevices.setAdapter(mAdapter);
+        devices = new ListDevicesAdapter();
+        devices.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                Intent intent = new Intent(getBaseContext(), SaveDeviceActivity.class);
+                intent.putExtra("device", devices.get(position));
+                intent.putExtra("position", position);
+                startActivityForResult(intent, REQUEST_CODE_EXAMPLE);
+            }
+        });
+        rvDevices.setAdapter(devices);
     }
 
     void getTrafficStatus(){
 
         intervalValue = 1000;
-        intervalGauge = 10;
+        intervalGauge = 50;
         //final boolean mStopHandler = false;
         received = TrafficStats.getTotalRxBytes();
         transmitted = TrafficStats.getTotalTxBytes();
@@ -280,23 +321,15 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(intervalValue <= 0){
                     intervalValue = 1000;
-                    Log.d("hehe_status", "Received: "+ currentValueRx);
-                    Log.d("hehe_status", "Transmitted: " + currentValueTx);
-                    currentValueRx = TrafficStats.getTotalRxBytes() - received;
-                    currentValueTx = TrafficStats.getTotalTxBytes() - transmitted;
+                    if(TrafficStats.getTotalRxBytes() - received > (currentValueRx / 10))
+                        currentValueRx = TrafficStats.getTotalRxBytes() - received;
+                    if(TrafficStats.getTotalTxBytes() - transmitted > (currentValueTx / 10))
+                        currentValueTx = TrafficStats.getTotalTxBytes() - transmitted;
                     received = TrafficStats.getTotalRxBytes();
                     transmitted = TrafficStats.getTotalTxBytes();
                 } else intervalValue -= intervalGauge;
                 updateGauge(gaugeValueRx, gaugeValueTx);
                 mHandler.postDelayed(this, intervalGauge);
-//                rx = TrafficStats.getTotalRxBytes() - received;
-//                tx = TrafficStats.getTotalTxBytes() - transmitted;
-//                updateGauge(rx*2, tx*2);
-//                Log.d("hehe_status", "" + rx);
-//                Log.d("hehe_status", "" + tx);
-//                received = TrafficStats.getTotalRxBytes();
-//                transmitted = TrafficStats.getTotalTxBytes();
-//                mHandler.postDelayed(this, 500);
             }
         };
         mHandler.post(runnable);
@@ -315,6 +348,7 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.activity_main_progress);
         indicatorRx = findViewById(R.id.activity_main_indicator_rx);
         indicatorTx = findViewById(R.id.activity_main_indicator_tx);
+        vgBlock2 = findViewById(R.id.activity_main_block2);
         progressBar.setVisibility(View.GONE);
     }
 
@@ -331,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
                 indicatorRx.setRotation(angle);
 
                 valueRx =(float) Math.round(valueRx * 100) / 100;
-                tvRx.setText("Tải xuống: " +  valueRx + " " + sRx);
+                tvRx.setText("" +  valueRx + " " + sRx);
             }
         });
 
@@ -342,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
                 indicatorTx.setRotation(angle);
 
                 valueTx =(float) Math.round(valueTx * 100) / 100;
-                tvTx.setText("Tải lên: " + valueTx + " " + sTx);
+                tvTx.setText("" + valueTx + " " + sTx);
             }
         });
     }
@@ -398,6 +432,50 @@ public class MainActivity extends AppCompatActivity {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.menu_item_measure_signal:
+                Intent intent = new Intent(getBaseContext(), SignalActivity.class);
+                intent.putExtra("prefix", addressPrefix);
+                startActivity(intent);
+                break;
+            case R.id.menu_item_manage_router:
+                String url = "http://" + addressPrefix + "1/";
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(browserIntent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_EXAMPLE) {
+            if(resultCode == Activity.RESULT_OK){
+                int position = data.getIntExtra("result", -1);
+                if(position != -1){
+                    SaveFileManager.getSavedName(devices.get(position));
+                    Device device = devices.get(position);
+                    //Log.d("hehe_onResult", device.getSavedName());
+                    devices.notifyItemChanged(position);
+                }
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                Log.d("hehe", "onActivityResult: ");
+                //Write your code if there's no result
+            }
         }
     }
 }

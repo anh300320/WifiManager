@@ -5,26 +5,33 @@ import java.util.List;
 
 public class ListDevices {
 
-    private static List<Device> devices = new ArrayList<>();
-    private static String routerMac = "";
+    private List<Device> devices = new ArrayList<>();
+    private  String routerMac = "";
 
-    public static List<Device> getAll(){
+    public ListDevices() {
+    }
+
+    public List<Device> getAll(){
         return devices;
     }
 
-    public static void clear(){
+    public void clear(){
         devices.clear();
     }
 
-    public static int size(){
+    public int size(){
         return devices.size();
     }
 
-    public static Device get(int position){
+    public Device get(int position){
         return devices.get(position);
     }
 
-    public static void add(Device device){
+    public void set(int position, Device device){
+        devices.get(position).set(device);
+    }
+
+    public void add(Device device){
         int size = devices.size();
         for(int i = 0; i < size; i++){
             Device tmp = devices.get(i);
@@ -33,11 +40,11 @@ public class ListDevices {
         devices.add(device);
     }
 
-    public static String getRouterMac() {
+    public String getRouterMac() {
         return routerMac;
     }
 
-    public static void setRouterMac(String mac) {
+    public void setRouterMac(String mac) {
         routerMac = mac;
     }
 }

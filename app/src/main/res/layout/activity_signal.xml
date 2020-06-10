@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_signal_main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SignalActivity"
+    android:background="@color/color_background">
+
+
+    <RelativeLayout
+        android:id="@+id/activity_signal_layout1"
+        android:layout_width="match_parent"
+        android:layout_height="330dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="15dp">
+
+        <ImageView
+            android:id="@+id/activity_signal_wifi"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:tint="@color/color_background_2"
+            android:src="@drawable/wifi_signal" />
+
+        <ImageView
+            android:id="@+id/activity_signal_value"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:tint="@color/color_widget1"
+            android:src="@drawable/wifi_signal"
+            android:layout_alignBottom="@+id/activity_signal_wifi"/>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:tint="@color/color_background"
+            android:src="@drawable/wifi_signal_mask_2"/>
+
+        <TextView
+            android:id="@+id/activity_signal_text_value"
+            android:text="50%"
+            android:textColor="@color/color_text"
+            android:textSize="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:id="@+id/activity_signal_text_signal_level"
+            android:text="Cường độ tín hiệu WiFi"
+            android:textStyle="bold"
+            android:textColor="@color/color_text"
+            android:textSize="@dimen/size_text_big"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/activity_signal_block_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/activity_signal_layout1"
+        android:layout_margin="@dimen/margin_10dp"
+        android:background="@drawable/custom_border"
+        android:backgroundTint="@color/color_background_2">
+
+        <TextView
+            android:id="@+id/activity_signal_text_1"
+            android:text="Chế độ "
+            android:textSize="@dimen/size_text_normal"
+            android:textColor="@color/color_text"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_5dp"/>
+
+        <TextView
+            android:id="@+id/activity_signal_text_frequency"
+            android:textSize="@dimen/size_text_normal"
+            android:textColor="@color/color_text"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/margin_5dp"/>
+
+        <TextView
+            android:id="@+id/activity_signal_text_4"
+            android:text="IP"
+            android:textColor="@color/color_text"
+            android:textSize="@dimen/size_text_normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/activity_signal_text_1"
+            android:layout_margin="@dimen/margin_5dp"/>
+
+        <TextView
+            android:id="@+id/activity_signal_text_ip"
+            android:textColor="@color/color_text"
+            android:textStyle="bold"
+            android:textSize="@dimen/size_text_normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/activity_signal_text_frequency"
+            android:layout_margin="@dimen/margin_5dp"/>
+
+        <TextView
+            android:id="@+id/activity_signal_text_2"
+            android:text="Tốc độ tối đa "
+            android:textSize="@dimen/size_text_normal"
+            android:textColor="@color/color_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/activity_signal_text_4"
+            android:layout_margin="@dimen/margin_5dp"/>
+
+        <TextView
+            android:id="@+id/activity_signal_text_receive_speed"
+            android:textSize="@dimen/size_text_normal"
+            android:textColor="@color/color_text"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/margin_5dp"
+            android:layout_below="@id/activity_signal_text_ip"/>
+
+        <TextView
+            android:id="@+id/activity_signal_text_3"
+            android:text="Cường độ tín hiệu "
+            android:textSize="@dimen/size_text_normal"
+            android:textColor="@color/color_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/activity_signal_text_2"
+            android:layout_margin="@dimen/margin_5dp"/>
+
+        <TextView
+            android:id="@+id/activity_signal_text_transmit_speed"
+            android:textSize="@dimen/size_text_normal"
+            android:textColor="@color/color_text"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/margin_5dp"
+            android:layout_below="@id/activity_signal_text_receive_speed"/>
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/activity_signal_button_router"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Quản trị Router"
+        android:backgroundTint="@color/color_widget1"
+        android:layout_margin="@dimen/margin_10dp"
+        android:layout_below="@+id/activity_signal_block_1"/>
+
+    <com.google.android.gms.ads.formats.UnifiedNativeAdView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/activity_signal_adview"
+        android:layout_below="@+id/activity_signal_button_router"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+        <TextView
+            android:id="@+id/activity_signal_ad_headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </com.google.android.gms.ads.formats.UnifiedNativeAdView>
+
+
+</RelativeLayout>

@@ -6,4 +6,7 @@
     <dimen name="size_text_item">15sp</dimen>
     <dimen name="size_item_icon">75sp</dimen>
     <dimen name="size_text_gauge">15sp</dimen>
+    <dimen name="margin_20dp">20dp</dimen>
+    <dimen name="size_text_big">20sp</dimen>
+    <dimen name="size_text_normal">15sp</dimen>
 </resources>
